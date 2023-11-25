@@ -7,7 +7,8 @@ import java.io.Serializable;
 
 @Data
 @ToString
-public class LoginDto implements Serializable {
+public class ResetPasswordDto implements Serializable {
     private String username;
-    private String password;
+    private String oldPassword;
+    private String newPassword;
 }

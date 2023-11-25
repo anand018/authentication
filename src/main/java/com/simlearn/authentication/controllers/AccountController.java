@@ -1,6 +1,7 @@
 package com.simlearn.authentication.controllers;
 
 import com.simlearn.authentication.dto.AccountDto;
+import com.simlearn.authentication.dto.ResetPasswordDto;
 import com.simlearn.authentication.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,5 +23,10 @@ public class AccountController {
     @GetMapping("/username/{username}")
     public boolean checkUsername(@PathVariable String username) {
         return accountService.checkUserName(username);
+    }
+
+    @PostMapping("/password")
+    public void resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        accountService.resetPassword(resetPasswordDto);
     }
 }
