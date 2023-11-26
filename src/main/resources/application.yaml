@@ -1,12 +1,8 @@
 server:
-  port: 8081
+  port: 8082
   servlet:
     context-path: /simlearn/authentication
 spring:
-  security:
-    user:
-      name: 5595832005
-      password: 5dceeeb7-47f3-4dc9-8f00-2845af1da8d2
   data:
     mongodb:
       uri: mongodb://localhost:27017/accounts
