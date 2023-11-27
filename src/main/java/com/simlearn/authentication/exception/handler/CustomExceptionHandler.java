@@ -15,7 +15,7 @@ public class CustomExceptionHandler {
     public ResponseEntity<ErrorObject> handleAuthenticationFailedException(AuthenticationFailedException ae) {
         ErrorObject errorObject = new ErrorObject();
         errorObject.setError("01");
-        errorObject.setMessage("username or password is incorrect");
+        errorObject.setMessage(ae.getMessage());
         return new ResponseEntity<>(errorObject, HttpStatus.UNAUTHORIZED);
     }
     @ExceptionHandler(InvalidUsernameException.class)

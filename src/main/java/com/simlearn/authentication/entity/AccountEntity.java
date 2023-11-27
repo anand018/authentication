@@ -16,4 +16,5 @@ public class AccountEntity {
     private String email;
     private String password;
     private String username;
+    private int failedLoginAttempts;
 }

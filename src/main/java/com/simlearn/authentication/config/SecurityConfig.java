@@ -23,6 +23,7 @@ public class SecurityConfig {
     public static PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -36,16 +37,20 @@ public class SecurityConfig {
             }
         };
     }
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http.csrf().disable()
                 .authorizeHttpRequests((authorize) -> {
                     authorize.anyRequest().authenticated();
                 }).httpBasic(Customizer.withDefaults());
         return http.build();
     }
+
     @Bean
     public UserDetailsService userDetailsService() {
+
         UserDetails ramesh = User.builder()
                 .username("5595832005")
                 .password(passwordEncoder().encode("5dceeeb7-47f3-4dc9-8f00-2845af1da8d2"))
