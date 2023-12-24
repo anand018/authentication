@@ -1,7 +1,8 @@
 package com.simlearn.authentication.service;
 
-import com.simlearn.authentication.dto.LoginDto;
+import com.simlearn.authentication.dto.LoginRequestDto;
+import com.simlearn.authentication.dto.LoginResponseDto;
 
 public interface LoginService {
-    boolean doLogin(LoginDto loginDto);
+    LoginResponseDto doLogin(LoginRequestDto loginRequestDto);
 }

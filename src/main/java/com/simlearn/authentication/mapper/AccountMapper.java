@@ -11,6 +11,7 @@ public class AccountMapper {
         accountEntity.setLastName(accountDto.getLastName());
         accountEntity.setEmail(accountDto.getEmail());
         accountEntity.setUsername(accountDto.getUsername());
+        accountEntity.setRole(accountDto.getRole());
         return accountEntity;
     }
 }

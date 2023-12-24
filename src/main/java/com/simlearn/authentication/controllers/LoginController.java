@@ -1,6 +1,7 @@
 package com.simlearn.authentication.controllers;
 
-import com.simlearn.authentication.dto.LoginDto;
+import com.simlearn.authentication.dto.LoginRequestDto;
+import com.simlearn.authentication.dto.LoginResponseDto;
 import com.simlearn.authentication.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,7 @@ public class LoginController {
     private LoginService loginService;
 
     @PostMapping("/login")
-    public boolean login(@RequestBody LoginDto logInDto) {
-        return loginService.doLogin(logInDto);
+    public LoginResponseDto login(@RequestBody LoginRequestDto logInRequestDto) {
+        return loginService.doLogin(logInRequestDto);
     }
 }
