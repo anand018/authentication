@@ -8,6 +8,7 @@ import com.simlearn.authentication.exception.AuthenticationFailedException;
 import com.simlearn.authentication.repository.AccountAndLoginRepository;
 import com.simlearn.authentication.service.LoginService;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -41,7 +42,7 @@ public class LoginServiceImpl implements LoginService {
             LoginResponseDto loginResponseDto = new LoginResponseDto();
             loginResponseDto.setEmail(accountEntity.getEmail());
             loginResponseDto.setUsername(accountEntity.getUsername());
-            loginResponseDto.setFirstName(accountEntity.getFirstName());
+            loginResponseDto.setFullName(StringUtils.trim(accountEntity.getFirstName()).concat(" ").concat(accountEntity.getLastName()));
             return loginResponseDto;
         }
         updateLoginAttempts(accountEntity);

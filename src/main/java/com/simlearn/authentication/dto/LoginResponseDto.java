@@ -8,5 +8,5 @@ import lombok.ToString;
 public class LoginResponseDto {
     private String username;
     private String email;
-    private String firstName;
+    private String fullName;
 }
