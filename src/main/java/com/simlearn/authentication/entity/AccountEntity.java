@@ -5,6 +5,8 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+
 @Data
 @ToString
 @Document
@@ -16,6 +18,7 @@ public class AccountEntity {
     private String email;
     private String password;
     private String username;
-    private String role;
+    private String[] role;
     private int failedLoginAttempts;
+    private String lastLoginFailedAt;
 }

@@ -10,4 +10,5 @@ import java.io.Serializable;
 public class LoginRequestDto implements Serializable {
     private String username;
     private String password;
+    private String role;
 }

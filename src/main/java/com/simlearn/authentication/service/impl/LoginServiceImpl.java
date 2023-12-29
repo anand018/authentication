@@ -16,6 +16,9 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Base64;
 
 @Service
@@ -31,13 +34,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public LoginResponseDto doLogin(LoginRequestDto loginRequestDto) {
         AccountEntity accountEntity = repository.findByUsername(loginRequestDto.getUsername());
-        if (ObjectUtils.isEmpty(accountEntity)) {
-            throw new AuthenticationFailedException("Username or password is incorrect");
-        }
-        if (accountEntity.getFailedLoginAttempts() >= ApplicatiopnConstants.ATTEMPTS_LIMIT && Base64.getEncoder().encodeToString(loginRequestDto.getPassword().getBytes(StandardCharsets.UTF_8)).equals(accountEntity.getPassword())) {
-            throw new AuthenticationFailedException("You have exceeded maximum number of login attempts. Try after 30 minutes");
-        }
-
+        validateLoginRequest(accountEntity, loginRequestDto);
         if (accountEntity.getFailedLoginAttempts() < ApplicatiopnConstants.ATTEMPTS_LIMIT && Base64.getEncoder().encodeToString(loginRequestDto.getPassword().getBytes(StandardCharsets.UTF_8)).equals(accountEntity.getPassword())) {
             accountEntity.setFailedLoginAttempts(0);
             mongoTemplate.updateFirst(new Query(Criteria.where("id").is(accountEntity.getId())), new Update().set("failedLoginAttempts", 0), AccountEntity.class);
@@ -50,8 +47,24 @@ public class LoginServiceImpl implements LoginService {
         updateLoginAttempts(accountEntity);
         throw new AuthenticationFailedException("Username or password is incorrect");
     }
+
     private void updateLoginAttempts(AccountEntity accountEntity) {
-        Update update = new Update().set("failedLoginAttempts", accountEntity.getFailedLoginAttempts() + 1);
+        accountEntity.setLastLoginFailedAt(LocalDateTime.now().toString());
+        Update update = new Update();
+        update.set("failedLoginAttempts", accountEntity.getFailedLoginAttempts() + 1);
+        update.set("lastLoginFailedAt", accountEntity.getLastLoginFailedAt());
         mongoTemplate.updateFirst(new Query(Criteria.where("id").is(accountEntity.getId())), update, AccountEntity.class);
+    }
+
+    private void validateLoginRequest(AccountEntity accountEntity, LoginRequestDto loginRequestDto) {
+        if (ObjectUtils.isEmpty(accountEntity))
+            throw new AuthenticationFailedException("Username or password is incorrect");
+        if (!Arrays.asList(accountEntity.getRole()).contains(loginRequestDto.getRole()))
+            throw new AuthenticationFailedException("Do not have the right access");
+        if (accountEntity.getFailedLoginAttempts() >= ApplicatiopnConstants.ATTEMPTS_LIMIT && Base64.getEncoder().encodeToString(loginRequestDto.getPassword().getBytes(StandardCharsets.UTF_8)).equals(accountEntity.getPassword()) && ChronoUnit.SECONDS.between(LocalDateTime.parse(accountEntity.getLastLoginFailedAt()), LocalDateTime.now()) >= 600)
+            accountEntity.setFailedLoginAttempts(0);
+        if (accountEntity.getFailedLoginAttempts() >= ApplicatiopnConstants.ATTEMPTS_LIMIT && Base64.getEncoder().encodeToString(loginRequestDto.getPassword().getBytes(StandardCharsets.UTF_8)).equals(accountEntity.getPassword())) {
+            throw new AuthenticationFailedException("You have exceeded maximum number of login attempts. Try after 30 minutes");
+        }
     }
 }
