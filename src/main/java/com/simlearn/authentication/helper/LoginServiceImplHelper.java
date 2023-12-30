@@ -21,14 +21,14 @@ public class LoginServiceImplHelper {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public void sendOtp(String email, String userName) {
+    public void sendOtp(String email, String username) {
         String otpCode = generateOtp();
-        sendOtpByEmail(email, otpCode, userName);
-        otpStorage.put(email, new OtpInfo(otpCode, System.currentTimeMillis()));
+        sendOtpByEmail(email, otpCode, username);
+        otpStorage.put(username, new OtpInfo(otpCode, System.currentTimeMillis()));
     }
 
-    public boolean validateOtp(String email, String otpEntered) {
-        OtpInfo otpInfo = otpStorage.get(email);
+    public boolean validateOtp(String username, String otpEntered) {
+        OtpInfo otpInfo = otpStorage.get(username);
         if (otpInfo != null) {
             // Check if the provided OTP matches the stored OTP. Valid (within a 30-minute window).
             if (otpEntered.equals(otpInfo.getOtpCode())) {
@@ -38,21 +38,21 @@ public class LoginServiceImplHelper {
                 boolean isValid = (currentTime - otpCreationTime) <= OTP_VALIDITY_DURATION;
                 // Remove the OTP and email from OTP storage
                 if (isValid)
-                    otpStorage.remove(email);
+                    otpStorage.remove(username);
                 return isValid;
             }
         }
         return false;
     }
 
-    private void sendOtpByEmail(String email, String otpCode, String userName) {
+    private void sendOtpByEmail(String email, String otpCode, String username) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject(EMAIL_SUBJECT);
         message.setText(EMAIL_MESSAGE.concat(otpCode));
         try {
             javaMailSender.send(message);
-            log.info(OTP_SUCCESS.concat(email).concat(" . Username: ".concat(userName)));
+            log.info(OTP_SUCCESS.concat(email).concat(" . Username: ".concat(username)));
         } catch (Exception e) {
             log.error(OTP_FAILURE.concat(email));
         }

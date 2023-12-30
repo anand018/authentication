@@ -19,9 +19,9 @@ public class LoginController {
         return loginService.doLogin(logInRequestDto);
     }
 
-    @PostMapping("/validate/{email}/{otp}")
-    public boolean validateOTP(@PathVariable String email, @PathVariable String otp) {
-        return loginService.validateOTPByEmail(email, otp);
+    @PostMapping("/validate/{username}/{otp}")
+    public boolean validateOTP(@PathVariable String username, @PathVariable String otp) {
+        return loginService.validateOTPByEmail(username, otp);
     }
 
     @PostMapping("/send-otp/{email}/{username}")
