@@ -9,4 +9,5 @@ public class LoginResponseDto {
     private String username;
     private String email;
     private String fullName;
+    private boolean validateByEmailOTP;
 }

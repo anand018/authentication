@@ -18,4 +18,14 @@ public class LoginController {
     public LoginResponseDto login(@RequestBody LoginRequestDto logInRequestDto) {
         return loginService.doLogin(logInRequestDto);
     }
+
+    @PostMapping("/validate/{email}/{otp}")
+    public boolean validateOTP(@PathVariable String email, @PathVariable String otp) {
+        return loginService.validateOTPByEmail(email, otp);
+    }
+
+    @PostMapping("/send-otp/{email}/{username}")
+    public void sendOTP(@PathVariable String email, @PathVariable String username) {
+        loginService.sendOTP(email, username);
+    }
 }

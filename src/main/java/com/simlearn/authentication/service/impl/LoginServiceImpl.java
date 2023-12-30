@@ -1,12 +1,15 @@
 package com.simlearn.authentication.service.impl;
 
-import com.simlearn.authentication.constants.ApplicatiopnConstants;
+import static com.simlearn.authentication.constants.ApplicatiopnConstants.*;
+
 import com.simlearn.authentication.dto.LoginRequestDto;
 import com.simlearn.authentication.dto.LoginResponseDto;
 import com.simlearn.authentication.entity.AccountEntity;
 import com.simlearn.authentication.exception.AuthenticationFailedException;
+import com.simlearn.authentication.helper.LoginServiceImplHelper;
 import com.simlearn.authentication.repository.AccountAndLoginRepository;
 import com.simlearn.authentication.service.LoginService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,33 +26,55 @@ import java.util.Arrays;
 import java.util.Base64;
 
 @Service
+@Slf4j
 public class LoginServiceImpl implements LoginService {
-
 
     @Autowired
     private AccountAndLoginRepository repository;
     @Autowired
     private MongoTemplate mongoTemplate;
+    @Autowired
+    private LoginServiceImplHelper implHelper;
 
 
     @Override
     public LoginResponseDto doLogin(LoginRequestDto loginRequestDto) {
         AccountEntity accountEntity = repository.findByUsername(loginRequestDto.getUsername());
         validateLoginRequest(accountEntity, loginRequestDto);
-        if (accountEntity.getFailedLoginAttempts() < ApplicatiopnConstants.ATTEMPTS_LIMIT && Base64.getEncoder().encodeToString(loginRequestDto.getPassword().getBytes(StandardCharsets.UTF_8)).equals(accountEntity.getPassword())) {
+        return authenticateUser(accountEntity, loginRequestDto);
+    }
+
+    @Override public boolean validateOTPByEmail(String email, String otp) {
+        return implHelper.validateOtp(email, otp);
+    }
+
+    @Override
+    public void sendOTP(String email, String username) {
+        implHelper.sendOtp(email,  username);
+        log.info("OTP is sent to user: ".concat(username));
+    }
+
+    private LoginResponseDto authenticateUser(AccountEntity accountEntity, LoginRequestDto loginRequestDto) {
+        if (accountEntity.getFailedLoginAttempts() < ATTEMPTS_LIMIT && Base64.getEncoder().encodeToString(loginRequestDto.getPassword().getBytes(StandardCharsets.UTF_8)).equals(accountEntity.getPassword())) {
             accountEntity.setFailedLoginAttempts(0);
-            mongoTemplate.updateFirst(new Query(Criteria.where("id").is(accountEntity.getId())), new Update().set("failedLoginAttempts", 0), AccountEntity.class);
+            mongoTemplate.updateFirst(new Query(Criteria.where("id").is(accountEntity.getId())), new Update().set("failedLoginAttempts", ZERO), AccountEntity.class);
             LoginResponseDto loginResponseDto = new LoginResponseDto();
             loginResponseDto.setEmail(accountEntity.getEmail());
             loginResponseDto.setUsername(accountEntity.getUsername());
             loginResponseDto.setFullName(StringUtils.trim(accountEntity.getFirstName()).concat(" ").concat(accountEntity.getLastName()));
+            if (Arrays.asList(accountEntity.getRole()).contains(ADMIN)) {
+                implHelper.sendOtp(accountEntity.getEmail(), accountEntity.getUsername());
+                loginResponseDto.setValidateByEmailOTP(true);
+            }
+            log.info(LOGIN_SUCCESS.concat(accountEntity.getUsername()));
             return loginResponseDto;
         }
-        updateLoginAttempts(accountEntity);
-        throw new AuthenticationFailedException("Username or password is incorrect");
+        updateFailedLoginAttempts(accountEntity);
+        log.error(FAILED_TO_LOGIN.concat(accountEntity.getUsername()).concat(FAILURE_REASON).concat(INCORRECT_USERNAME_PASSWORD));
+        throw new AuthenticationFailedException(INCORRECT_USERNAME_PASSWORD);
     }
 
-    private void updateLoginAttempts(AccountEntity accountEntity) {
+    private void updateFailedLoginAttempts(AccountEntity accountEntity) {
         accountEntity.setLastLoginFailedAt(LocalDateTime.now().toString());
         Update update = new Update();
         update.set("failedLoginAttempts", accountEntity.getFailedLoginAttempts() + 1);
@@ -58,14 +83,18 @@ public class LoginServiceImpl implements LoginService {
     }
 
     private void validateLoginRequest(AccountEntity accountEntity, LoginRequestDto loginRequestDto) {
-        if (ObjectUtils.isEmpty(accountEntity))
-            throw new AuthenticationFailedException("Username or password is incorrect");
-        if (!Arrays.asList(accountEntity.getRole()).contains(loginRequestDto.getRole()))
-            throw new AuthenticationFailedException("Do not have the right access");
-        if (accountEntity.getFailedLoginAttempts() >= ApplicatiopnConstants.ATTEMPTS_LIMIT && Base64.getEncoder().encodeToString(loginRequestDto.getPassword().getBytes(StandardCharsets.UTF_8)).equals(accountEntity.getPassword()) && ChronoUnit.SECONDS.between(LocalDateTime.parse(accountEntity.getLastLoginFailedAt()), LocalDateTime.now()) >= 600)
+        if (ObjectUtils.isEmpty(accountEntity)) {
+            log.error(FAILED_TO_LOGIN.concat(accountEntity.getUsername()).concat(FAILURE_REASON).concat(INCORRECT_USERNAME_PASSWORD));
+            throw new AuthenticationFailedException(INCORRECT_USERNAME_PASSWORD);
+        }
+        if (!Arrays.asList(accountEntity.getRole()).contains(loginRequestDto.getRole())) {
+            log.error(FAILED_TO_LOGIN.concat(accountEntity.getUsername()).concat(FAILURE_REASON).concat(NO_ACCESS_TO_LOGIN));
+            throw new AuthenticationFailedException(NO_ACCESS_TO_LOGIN);
+        }
+        if (accountEntity.getFailedLoginAttempts() >= ATTEMPTS_LIMIT && Base64.getEncoder().encodeToString(loginRequestDto.getPassword().getBytes(StandardCharsets.UTF_8)).equals(accountEntity.getPassword()) && ChronoUnit.SECONDS.between(LocalDateTime.parse(accountEntity.getLastLoginFailedAt()), LocalDateTime.now()) >= COOLING_PERIOD)
             accountEntity.setFailedLoginAttempts(0);
-        if (accountEntity.getFailedLoginAttempts() >= ApplicatiopnConstants.ATTEMPTS_LIMIT && Base64.getEncoder().encodeToString(loginRequestDto.getPassword().getBytes(StandardCharsets.UTF_8)).equals(accountEntity.getPassword())) {
-            throw new AuthenticationFailedException("You have exceeded maximum number of login attempts. Try after 30 minutes");
+        if (accountEntity.getFailedLoginAttempts() >= ATTEMPTS_LIMIT && Base64.getEncoder().encodeToString(loginRequestDto.getPassword().getBytes(StandardCharsets.UTF_8)).equals(accountEntity.getPassword())) {
+            throw new AuthenticationFailedException(EXCEEDED_ATTEMPTS);
         }
     }
 }
