@@ -1,19 +1,8 @@
 server:
-  port: 8082
+  port: 8083
   servlet:
-    context-path: /simlearn/authentication
+    context-path: /simlearn/instructormanager
 spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: anandpsingh7@gmail.com
-    password: wqrv yqpw qxie jixi
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
   data:
     mongodb:
-      uri: mongodb://localhost:27017/accounts
+      uri: mongodb://localhost:27017/instructor
