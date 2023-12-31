@@ -26,6 +26,11 @@ public class AccountController {
         return accountService.checkUserName(username);
     }
 
+    @GetMapping("/email/{email}")
+    public boolean checkEmail(@PathVariable String email) {
+        return accountService.checkEmail(email);
+    }
+
     @PostMapping("/password")
     public void resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
         accountService.resetPassword(resetPasswordDto);

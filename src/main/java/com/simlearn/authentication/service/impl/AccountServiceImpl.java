@@ -38,9 +38,15 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public boolean checkUserName(String username) {
-        if (ObjectUtils.isEmpty(accountAndLoginRepository.findByUsername(username))) {
+        if (ObjectUtils.isEmpty(accountAndLoginRepository.findByUsername(username)))
             return true;
-        }
+        return false;
+    }
+
+    @Override
+    public boolean checkEmail(String email) {
+        if (ObjectUtils.isEmpty(accountAndLoginRepository.findByEmail(email)))
+            return true;
         return false;
     }
 
