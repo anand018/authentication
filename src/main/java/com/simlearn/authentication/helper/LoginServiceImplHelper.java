@@ -23,9 +23,9 @@ public class LoginServiceImplHelper {
     @Autowired
     private JavaMailSender javaMailSender;
 
-    public void sendOtp(String email, String username) {
+    public void sendOtp(String email) {
         String otpCode = generateOtp();
-        sendOtpByEmail(email, otpCode, username);
+        sendOtpByEmail(email, otpCode);
         otpStorage.put(email, new OtpInfo(otpCode, System.currentTimeMillis()));
     }
 
@@ -48,14 +48,14 @@ public class LoginServiceImplHelper {
             throw new InvalidOTPException(OTP_INVALID);
     }
 
-    private void sendOtpByEmail(String email, String otpCode, String username) {
+    private void sendOtpByEmail(String email, String otpCode) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(email);
         message.setSubject(EMAIL_SUBJECT);
         message.setText(EMAIL_MESSAGE.concat(otpCode));
         try {
             javaMailSender.send(message);
-            log.info(OTP_SUCCESS.concat(email).concat(" . Username: ".concat(username)));
+            log.info(OTP_SUCCESS.concat(email));
         } catch (Exception e) {
             log.error(OTP_FAILURE.concat(email));
             throw new OtpException(OTP_FAILURE.concat(email));

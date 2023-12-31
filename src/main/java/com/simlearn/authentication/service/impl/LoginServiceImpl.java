@@ -49,9 +49,9 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public void sendOTP(String email, String username) {
-        implHelper.sendOtp(email,  username);
-        log.info("OTP is sent to user: ".concat(username));
+    public void sendOTP(String email) {
+        implHelper.sendOtp(email);
+        log.info("OTP is sent to email: ".concat(email));
     }
 
     private LoginResponseDto authenticateUser(AccountEntity accountEntity, LoginRequestDto loginRequestDto) {
@@ -63,7 +63,7 @@ public class LoginServiceImpl implements LoginService {
             loginResponseDto.setUsername(accountEntity.getUsername());
             loginResponseDto.setFullName(StringUtils.trim(accountEntity.getFirstName()).concat(" ").concat(accountEntity.getLastName()));
             if (Arrays.asList(accountEntity.getRole()).contains(ADMIN)) {
-                implHelper.sendOtp(accountEntity.getEmail(), accountEntity.getUsername());
+                implHelper.sendOtp(accountEntity.getEmail());
                 loginResponseDto.setValidateByEmailOTP(true);
             }
             log.info(LOGIN_SUCCESS.concat(accountEntity.getUsername()));

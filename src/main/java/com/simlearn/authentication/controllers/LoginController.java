@@ -24,8 +24,8 @@ public class LoginController {
         return loginService.validateOTPByEmail(email, otp);
     }
 
-    @PostMapping("/send-otp/{email}/{username}")
-    public void sendOTP(@PathVariable String email, @PathVariable String username) {
-        loginService.sendOTP(email, username);
+    @PostMapping("/send-otp/{email}")
+    public void sendOTP(@PathVariable String email) {
+        loginService.sendOTP(email);
     }
 }
