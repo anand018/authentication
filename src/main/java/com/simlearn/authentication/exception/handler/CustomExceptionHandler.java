@@ -4,6 +4,7 @@ import com.simlearn.authentication.error.ErrorObject;
 import com.simlearn.authentication.exception.AuthenticationFailedException;
 import com.simlearn.authentication.exception.InvalidOTPException;
 import com.simlearn.authentication.exception.InvalidUsernameException;
+import com.simlearn.authentication.exception.OtpException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -39,5 +40,12 @@ public class CustomExceptionHandler {
         errorObject.setError("04");
         errorObject.setMessage("invalid otp");
         return new ResponseEntity<>(errorObject, HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(OtpException.class)
+    public ResponseEntity<ErrorObject> handleOtpException(OtpException ae) {
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setError("05");
+        errorObject.setMessage("failed to send OTP");
+        return new ResponseEntity<>(errorObject, HttpStatus.BAD_REQUEST);
     }
 }

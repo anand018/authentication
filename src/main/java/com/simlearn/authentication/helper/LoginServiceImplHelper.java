@@ -3,6 +3,7 @@ package com.simlearn.authentication.helper;
 import static com.simlearn.authentication.constants.ApplicatiopnConstants.*;
 
 import com.simlearn.authentication.exception.InvalidOTPException;
+import com.simlearn.authentication.exception.OtpException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -55,8 +56,10 @@ public class LoginServiceImplHelper {
         try {
             javaMailSender.send(message);
             log.info(OTP_SUCCESS.concat(email).concat(" . Username: ".concat(username)));
+            throw new RuntimeException();
         } catch (Exception e) {
             log.error(OTP_FAILURE.concat(email));
+            throw new OtpException(OTP_FAILURE.concat(email));
         }
     }
 
