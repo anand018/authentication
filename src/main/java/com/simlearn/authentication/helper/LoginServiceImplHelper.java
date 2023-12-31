@@ -2,6 +2,7 @@ package com.simlearn.authentication.helper;
 
 import static com.simlearn.authentication.constants.ApplicatiopnConstants.*;
 
+import com.simlearn.authentication.exception.InvalidOTPException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -29,20 +30,21 @@ public class LoginServiceImplHelper {
 
     public boolean validateOtp(String username, String otpEntered) {
         OtpInfo otpInfo = otpStorage.get(username);
+        boolean isValid = false;
+
         if (otpInfo != null) {
             // Check if the provided OTP matches the stored OTP. Valid (within a 30-minute window).
             if (otpEntered.equals(otpInfo.getOtpCode())) {
                 long currentTime = System.currentTimeMillis();
                 long otpCreationTime = otpInfo.getCreationTime();
-
-                boolean isValid = (currentTime - otpCreationTime) <= OTP_VALIDITY_DURATION;
-                // Remove the OTP and email from OTP storage
-                if (isValid)
-                    otpStorage.remove(username);
-                return isValid;
+                isValid = (currentTime - otpCreationTime) <= OTP_VALIDITY_DURATION;
             }
         }
-        return false;
+        otpStorage.remove(username);
+        if(isValid)
+            return true;
+        else
+            throw new InvalidOTPException(OTP_INVALID);
     }
 
     private void sendOtpByEmail(String email, String otpCode, String username) {

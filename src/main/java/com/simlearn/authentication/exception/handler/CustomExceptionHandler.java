@@ -2,6 +2,7 @@ package com.simlearn.authentication.exception.handler;
 
 import com.simlearn.authentication.error.ErrorObject;
 import com.simlearn.authentication.exception.AuthenticationFailedException;
+import com.simlearn.authentication.exception.InvalidOTPException;
 import com.simlearn.authentication.exception.InvalidUsernameException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,17 @@ public class CustomExceptionHandler {
         return new ResponseEntity<>(errorObject, HttpStatus.UNAUTHORIZED);
     }
     @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<ErrorObject> handleAInvalidPasswordException(InvalidPasswordException ae) {
+    public ResponseEntity<ErrorObject> handleInvalidPasswordException(InvalidPasswordException ae) {
         ErrorObject errorObject = new ErrorObject();
         errorObject.setError("03");
         errorObject.setMessage("invalid old password");
+        return new ResponseEntity<>(errorObject, HttpStatus.UNAUTHORIZED);
+    }
+    @ExceptionHandler(InvalidOTPException.class)
+    public ResponseEntity<ErrorObject> handleInvalidOTPException(InvalidOTPException ae) {
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setError("04");
+        errorObject.setMessage("invalid otp");
         return new ResponseEntity<>(errorObject, HttpStatus.UNAUTHORIZED);
     }
 }
