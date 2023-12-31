@@ -44,8 +44,8 @@ public class LoginServiceImpl implements LoginService {
         return authenticateUser(accountEntity, loginRequestDto);
     }
 
-    @Override public boolean validateOTPByEmail(String username, String otp) {
-        return implHelper.validateOtp(username, otp);
+    @Override public boolean validateOTPByEmail(String email, String otp) {
+        return implHelper.validateOtp(email, otp);
     }
 
     @Override

@@ -26,11 +26,11 @@ public class LoginServiceImplHelper {
     public void sendOtp(String email, String username) {
         String otpCode = generateOtp();
         sendOtpByEmail(email, otpCode, username);
-        otpStorage.put(username, new OtpInfo(otpCode, System.currentTimeMillis()));
+        otpStorage.put(email, new OtpInfo(otpCode, System.currentTimeMillis()));
     }
 
-    public boolean validateOtp(String username, String otpEntered) {
-        OtpInfo otpInfo = otpStorage.get(username);
+    public boolean validateOtp(String email, String otpEntered) {
+        OtpInfo otpInfo = otpStorage.get(email);
         boolean isValid = false;
 
         if (otpInfo != null) {
@@ -41,7 +41,7 @@ public class LoginServiceImplHelper {
                 isValid = (currentTime - otpCreationTime) <= OTP_VALIDITY_DURATION;
             }
         }
-        otpStorage.remove(username);
+        otpStorage.remove(email);
         if(isValid)
             return true;
         else
