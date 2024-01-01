@@ -21,6 +21,12 @@ public class AccountController {
         accountService.createAccount(accountDto);
     }
 
+    @DeleteMapping("/account/{username}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(@PathVariable String username) {
+        accountService.deleteAccount(username);
+    }
+
     @GetMapping("/username/{username}")
     public boolean checkUsername(@PathVariable String username) {
         return accountService.checkUserName(username);

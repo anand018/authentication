@@ -37,6 +37,11 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public void deleteAccount(String username) {
+        accountAndLoginRepository.deleteByUsername(username);
+    }
+
+    @Override
     public boolean checkUserName(String username) {
         if (ObjectUtils.isEmpty(accountAndLoginRepository.findByUsername(username)))
             return true;

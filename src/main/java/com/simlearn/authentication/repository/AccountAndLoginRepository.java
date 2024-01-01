@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface AccountAndLoginRepository extends MongoRepository<AccountEntity, String> {
     AccountEntity findByUsername(@Param("username") String username);
     AccountEntity findByEmail(@Param("email") String email);
+    void deleteByUsername(@Param("username") String username);
 }

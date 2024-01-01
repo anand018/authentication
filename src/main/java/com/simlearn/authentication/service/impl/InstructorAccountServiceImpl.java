@@ -25,10 +25,11 @@ public class InstructorAccountServiceImpl implements InstructorAccountService {
     @Override
     public List<InstructorAccountResponseDto> findAllInstructors() {
         List<AccountEntity> accountEntities = mongoTemplate.find(new Query(Criteria.where("role").in("INSTRUCTOR")), AccountEntity.class);
-        if(ObjectUtils.isEmpty(accountEntities))
+        if (ObjectUtils.isEmpty(accountEntities))
             throw new AccountNotFoundException(ACCOUNT_NOT_FOUND);
         return createInstructorAccount(accountEntities);
     }
+
     private List<InstructorAccountResponseDto> createInstructorAccount(List<AccountEntity> accountEntities) {
         List<InstructorAccountResponseDto> instructorAccountResponseDtos = new ArrayList<>();
         accountEntities.stream().forEach(accountEntity -> {
