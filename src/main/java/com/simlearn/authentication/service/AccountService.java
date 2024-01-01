@@ -9,4 +9,6 @@ public interface AccountService {
     boolean checkUserName(String username);
     boolean checkEmail(String email);
     void resetPassword(ResetPasswordDto resetPasswordDto);
+    void updateNewPassword(ResetPasswordDto resetPasswordDto);
+
 }

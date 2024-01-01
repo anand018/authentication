@@ -1,6 +1,5 @@
 package com.simlearn.authentication.service.impl;
 
-import com.simlearn.authentication.constants.ApplicatiopnConstants;
 import com.simlearn.authentication.dto.AccountDto;
 import com.simlearn.authentication.dto.ResetPasswordDto;
 import com.simlearn.authentication.entity.AccountEntity;
@@ -66,5 +65,14 @@ public class AccountServiceImpl implements AccountService {
         } else {
             throw new InvalidPasswordException("Password is invalid");
         }
+    }
+
+    @Override
+    public void updateNewPassword(ResetPasswordDto resetPasswordDto) {
+        AccountEntity accountEntity = accountAndLoginRepository.findByUsername(resetPasswordDto.getUsername());
+        if (ObjectUtils.isEmpty(accountEntity))
+            throw new InvalidUsernameException("Username is invalid");
+        accountEntity.setPassword(resetPasswordDto.getNewPassword());
+        accountAndLoginRepository.save(accountEntity);
     }
 }

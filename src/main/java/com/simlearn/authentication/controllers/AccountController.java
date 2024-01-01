@@ -41,4 +41,9 @@ public class AccountController {
     public void resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
         accountService.resetPassword(resetPasswordDto);
     }
+
+    @PostMapping("/update")
+    public void updateNewPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        accountService.updateNewPassword(resetPasswordDto);
+    }
 }
