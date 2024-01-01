@@ -1,10 +1,7 @@
 package com.simlearn.authentication.exception.handler;
 
 import com.simlearn.authentication.error.ErrorObject;
-import com.simlearn.authentication.exception.AuthenticationFailedException;
-import com.simlearn.authentication.exception.InvalidOTPException;
-import com.simlearn.authentication.exception.InvalidUsernameException;
-import com.simlearn.authentication.exception.OtpException;
+import com.simlearn.authentication.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -47,5 +44,12 @@ public class CustomExceptionHandler {
         errorObject.setError("05");
         errorObject.setMessage("failed to send OTP");
         return new ResponseEntity<>(errorObject, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(AccountNotFoundException.class)
+    public ResponseEntity<ErrorObject> handleAccountNotFoundException(AccountNotFoundException ae) {
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setError("06");
+        errorObject.setMessage("Account not found");
+        return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
     }
 }

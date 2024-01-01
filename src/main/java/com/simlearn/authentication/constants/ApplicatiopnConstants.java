@@ -19,5 +19,6 @@ public class ApplicatiopnConstants {
     public static final String OTP_SUCCESS = "OTP is sent to email: ";
     public static final String OTP_FAILURE = "Failed to send OTP to email: ";
     public static final String OTP_INVALID = "Invalid OTP";
+    public static final String ACCOUNT_NOT_FOUND = "No account found";
 
 }
