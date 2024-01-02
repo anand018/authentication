@@ -72,7 +72,7 @@ public class AccountServiceImpl implements AccountService {
         AccountEntity accountEntity = accountAndLoginRepository.findByUsername(resetPasswordDto.getUsername());
         if (ObjectUtils.isEmpty(accountEntity))
             throw new InvalidUsernameException("Username is invalid");
-        accountEntity.setPassword(resetPasswordDto.getNewPassword());
-        accountAndLoginRepository.save(accountEntity);
+        Update update = new Update().set("password", Base64.getEncoder().encodeToString(resetPasswordDto.getNewPassword().getBytes(StandardCharsets.UTF_8)));
+        mongoTemplate.updateFirst(new Query(Criteria.where("id").is(accountEntity.getId())), update, AccountEntity.class);
     }
 }

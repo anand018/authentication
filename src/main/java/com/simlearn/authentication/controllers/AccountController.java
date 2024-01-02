@@ -42,7 +42,7 @@ public class AccountController {
         accountService.resetPassword(resetPasswordDto);
     }
 
-    @PostMapping("/update")
+    @PostMapping("/password/update/direct")
     public void updateNewPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
         accountService.updateNewPassword(resetPasswordDto);
     }
