@@ -1,7 +1,10 @@
 package com.simlearn.authentication.service;
 
 import com.simlearn.authentication.dto.AccountDto;
+import com.simlearn.authentication.dto.GameDto;
 import com.simlearn.authentication.dto.ResetPasswordDto;
+
+import java.util.List;
 
 public interface AccountService {
     void createAccount(AccountDto accountDto);
@@ -10,5 +13,7 @@ public interface AccountService {
     boolean checkEmail(String email);
     void resetPassword(ResetPasswordDto resetPasswordDto);
     void updateNewPassword(ResetPasswordDto resetPasswordDto);
+    void updateGamesList(String username, GameDto gameDto);
+    List<GameDto> getAllGamesForStudent(String username);
 
 }

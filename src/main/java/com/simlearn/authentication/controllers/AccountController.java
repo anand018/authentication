@@ -1,11 +1,14 @@
 package com.simlearn.authentication.controllers;
 
 import com.simlearn.authentication.dto.AccountDto;
+import com.simlearn.authentication.dto.GameDto;
 import com.simlearn.authentication.dto.ResetPasswordDto;
 import com.simlearn.authentication.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -45,5 +48,14 @@ public class AccountController {
     @PostMapping("/password/update/direct")
     public void updateNewPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
         accountService.updateNewPassword(resetPasswordDto);
+    }
+
+    @PostMapping("/account/games/{username}")
+    public void updateGames(@PathVariable String username, @RequestBody GameDto gameDto) {
+        accountService.updateGamesList(username, gameDto);
+    }
+    @GetMapping("/account/games/{username}")
+    public List<GameDto> findGamesForStudent(@PathVariable String username) {
+        return accountService.getAllGamesForStudent(username);
     }
 }

@@ -1,14 +1,17 @@
 package com.simlearn.authentication.service.impl;
 
 import com.simlearn.authentication.dto.AccountDto;
+import com.simlearn.authentication.dto.GameDto;
 import com.simlearn.authentication.dto.ResetPasswordDto;
 import com.simlearn.authentication.entity.AccountEntity;
+import com.simlearn.authentication.entity.GameEntity;
 import com.simlearn.authentication.exception.InvalidUsernameException;
 import com.simlearn.authentication.exception.handler.InvalidPasswordException;
 import com.simlearn.authentication.mapper.AccountMapper;
 import com.simlearn.authentication.repository.AccountAndLoginRepository;
 import com.simlearn.authentication.service.AccountService;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,7 +20,9 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -74,5 +79,34 @@ public class AccountServiceImpl implements AccountService {
             throw new InvalidUsernameException("Username is invalid");
         Update update = new Update().set("password", Base64.getEncoder().encodeToString(resetPasswordDto.getNewPassword().getBytes(StandardCharsets.UTF_8)));
         mongoTemplate.updateFirst(new Query(Criteria.where("id").is(accountEntity.getId())), update, AccountEntity.class);
+    }
+
+    @Override
+    public void updateGamesList(String username, GameDto gameDto) {
+        GameEntity gameEntity = new GameEntity();
+        gameEntity.setGameId(gameDto.getGameId());
+        gameEntity.setGameName(gameDto.getGameName());
+        gameEntity.setAttempts(gameDto.getAttempts());
+        Query query = new Query(Criteria.where("username").is(username));
+        Update update = new Update();
+        update.push("gamesList", gameEntity);
+        mongoTemplate.updateFirst(query, update, AccountEntity.class);
+    }
+
+    @Override
+    public List<GameDto> getAllGamesForStudent(String username) {
+        List<GameEntity> gameEntities = mongoTemplate.findOne(new Query(Criteria.where("username").is(username)), AccountEntity.class).getGamesList();
+        return convertToGameDto(gameEntities);
+    }
+    private List<GameDto> convertToGameDto(List<GameEntity> gameEntities) {
+        List<GameDto> gameDtoList = new ArrayList<>();
+        gameEntities.forEach(gameEntity -> {
+            GameDto gameDto = new GameDto();
+            gameDto.setGameName(gameEntity.getGameName());
+            gameDto.setGameId(gameEntity.getGameId());
+            gameDto.setAttempts(gameEntity.getAttempts());
+            gameDtoList.add(gameDto);
+        });
+        return gameDtoList;
     }
 }

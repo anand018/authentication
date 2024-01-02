@@ -5,7 +5,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @ToString
@@ -21,4 +21,5 @@ public class AccountEntity {
     private String[] role;
     private int failedLoginAttempts;
     private String lastLoginFailedAt;
+    private List<GameEntity> gamesList;
 }
