@@ -87,6 +87,7 @@ public class AccountServiceImpl implements AccountService {
         gameEntity.setGameId(gameDto.getGameId());
         gameEntity.setGameName(gameDto.getGameName());
         gameEntity.setAttempts(gameDto.getAttempts());
+        gameEntity.setCourseCode(gameDto.getCourseCode());
         Query query = new Query(Criteria.where("username").is(username));
         Update update = new Update();
         update.push("gamesList", gameEntity);

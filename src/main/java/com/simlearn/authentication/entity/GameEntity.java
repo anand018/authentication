@@ -11,5 +11,6 @@ public class GameEntity {
     private String _id;
     private String gameId;
     private String gameName;
+    private String courseCode;
     private int attempts;
 }

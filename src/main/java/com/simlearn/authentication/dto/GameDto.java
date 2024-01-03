@@ -6,5 +6,6 @@ import lombok.Data;
 public class GameDto {
     private String gameId;
     private String gameName;
+    private String courseCode;
     private int attempts;
 }
