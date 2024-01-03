@@ -106,6 +106,7 @@ public class AccountServiceImpl implements AccountService {
             gameDto.setGameName(gameEntity.getGameName());
             gameDto.setGameId(gameEntity.getGameId());
             gameDto.setAttempts(gameEntity.getAttempts());
+            gameDto.setCourseCode(gameEntity.getCourseCode());
             gameDtoList.add(gameDto);
         });
         return gameDtoList;
