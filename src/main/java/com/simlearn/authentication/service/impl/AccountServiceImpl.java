@@ -5,8 +5,10 @@ import com.simlearn.authentication.dto.GameDto;
 import com.simlearn.authentication.dto.ResetPasswordDto;
 import com.simlearn.authentication.entity.AccountEntity;
 import com.simlearn.authentication.entity.GameEntity;
+import com.simlearn.authentication.exception.AccountNotFoundException;
 import com.simlearn.authentication.exception.InvalidUsernameException;
 import com.simlearn.authentication.exception.handler.InvalidPasswordException;
+import com.simlearn.authentication.helper.LoginServiceImplHelper;
 import com.simlearn.authentication.mapper.AccountMapper;
 import com.simlearn.authentication.repository.AccountAndLoginRepository;
 import com.simlearn.authentication.service.AccountService;
@@ -29,6 +31,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountAndLoginRepository accountAndLoginRepository;
+    @Autowired
+    private LoginServiceImplHelper implHelper;
 
     @Autowired
     MongoTemplate mongoTemplate;
@@ -70,6 +74,14 @@ public class AccountServiceImpl implements AccountService {
         } else {
             throw new InvalidPasswordException("Password is invalid");
         }
+    }
+
+    @Override
+    public void forgetPassword(String username, String email) {
+        AccountEntity accountEntity = accountAndLoginRepository.findByUsername(username);
+        if(ObjectUtils.isEmpty(accountEntity) || !accountEntity.getEmail().equals(email))
+            throw new AccountNotFoundException("No account found from the given username");
+        implHelper.sendOtp(email);
     }
 
     @Override

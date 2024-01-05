@@ -44,6 +44,11 @@ public class AccountController {
     public void resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
         accountService.resetPassword(resetPasswordDto);
     }
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @PostMapping("/password/forget/{username}/{email}")
+    public void forgetPassword(@PathVariable String username, @PathVariable String email) {
+        accountService.forgetPassword(username, email);
+    }
 
     @PostMapping("/password/update/direct")
     public void updateNewPassword(@RequestBody ResetPasswordDto resetPasswordDto) {

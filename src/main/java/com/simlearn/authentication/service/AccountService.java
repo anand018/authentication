@@ -12,6 +12,7 @@ public interface AccountService {
     boolean checkUserName(String username);
     boolean checkEmail(String email);
     void resetPassword(ResetPasswordDto resetPasswordDto);
+    void forgetPassword(String username, String email);
     void updateNewPassword(ResetPasswordDto resetPasswordDto);
     void updateGamesList(String username, GameDto gameDto);
     List<GameDto> getAllGamesForStudent(String username);
