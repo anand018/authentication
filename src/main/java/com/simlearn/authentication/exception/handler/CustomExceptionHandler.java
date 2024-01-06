@@ -52,4 +52,11 @@ public class CustomExceptionHandler {
         errorObject.setMessage("Account not found");
         return new ResponseEntity<>(errorObject, HttpStatus.NOT_FOUND);
     }
+    @ExceptionHandler(UnknownException.class)
+    public ResponseEntity<ErrorObject> handleUnknownException(UnknownException ae) {
+        ErrorObject errorObject = new ErrorObject();
+        errorObject.setError("07");
+        errorObject.setMessage("Request failed with unknown error");
+        return new ResponseEntity<>(errorObject, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

@@ -1,5 +1,6 @@
 package com.simlearn.authentication.service.impl;
 
+import com.simlearn.authentication.constants.ApplicationConstants;
 import com.simlearn.authentication.dto.AccountDto;
 import com.simlearn.authentication.dto.GameDto;
 import com.simlearn.authentication.dto.ResetPasswordDto;
@@ -7,13 +8,14 @@ import com.simlearn.authentication.entity.AccountEntity;
 import com.simlearn.authentication.entity.GameEntity;
 import com.simlearn.authentication.exception.AccountNotFoundException;
 import com.simlearn.authentication.exception.InvalidUsernameException;
+import com.simlearn.authentication.exception.UnknownException;
 import com.simlearn.authentication.exception.handler.InvalidPasswordException;
 import com.simlearn.authentication.helper.LoginServiceImplHelper;
 import com.simlearn.authentication.mapper.AccountMapper;
 import com.simlearn.authentication.repository.AccountAndLoginRepository;
 import com.simlearn.authentication.service.AccountService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -27,6 +29,7 @@ import java.util.Base64;
 import java.util.List;
 
 @Service
+@Slf4j
 public class AccountServiceImpl implements AccountService {
 
     @Autowired
@@ -79,8 +82,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void forgetPassword(String username, String email) {
         AccountEntity accountEntity = accountAndLoginRepository.findByUsername(username);
-        if(ObjectUtils.isEmpty(accountEntity) || !accountEntity.getEmail().equals(email))
-            throw new AccountNotFoundException("No account found from the given username");
+        if (ObjectUtils.isEmpty(accountEntity) || !accountEntity.getEmail().equals(email))
+            throw new AccountNotFoundException(ApplicationConstants.ACCOUNT_NOT_FOUND);
         implHelper.sendOtp(email);
     }
 
@@ -111,6 +114,30 @@ public class AccountServiceImpl implements AccountService {
         List<GameEntity> gameEntities = mongoTemplate.findOne(new Query(Criteria.where("username").is(username)), AccountEntity.class).getGamesList();
         return convertToGameDto(gameEntities);
     }
+
+    @Override
+    public String saveProfilePicture(String username, byte[] file) {
+        try {
+            AccountEntity user = accountAndLoginRepository.findByUsername(username);
+            if (ObjectUtils.isEmpty(user))
+                throw new AccountNotFoundException(ApplicationConstants.ACCOUNT_NOT_FOUND);
+            user.setProfilePicture(file);
+            accountAndLoginRepository.save(user);
+            return ApplicationConstants.SAVED_SUCCESSFULLY;
+        } catch (Exception e) {
+            log.error(ApplicationConstants.FAILED_TO_SAVE.concat(e.getMessage()));
+            throw new UnknownException(ApplicationConstants.FAILED_TO_SAVE);
+        }
+    }
+
+    @Override
+    public AccountEntity getProfilePicture(String username) {
+        AccountEntity user = accountAndLoginRepository.findByUsername(username);
+        if (ObjectUtils.isEmpty(user))
+            throw new AccountNotFoundException(ApplicationConstants.ACCOUNT_NOT_FOUND);
+        return user;
+    }
+
     private List<GameDto> convertToGameDto(List<GameEntity> gameEntities) {
         List<GameDto> gameDtoList = new ArrayList<>();
         gameEntities.forEach(gameEntity -> {

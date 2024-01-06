@@ -1,6 +1,6 @@
 package com.simlearn.authentication.helper;
 
-import static com.simlearn.authentication.constants.ApplicatiopnConstants.*;
+import static com.simlearn.authentication.constants.ApplicationConstants.*;
 
 import com.simlearn.authentication.exception.InvalidOTPException;
 import com.simlearn.authentication.exception.OtpException;

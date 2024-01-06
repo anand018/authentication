@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.simlearn.authentication.constants.ApplicatiopnConstants.ACCOUNT_NOT_FOUND;
+import static com.simlearn.authentication.constants.ApplicationConstants.ACCOUNT_NOT_FOUND;
 
 @Service
 public class InstructorAccountServiceImpl implements InstructorAccountService {

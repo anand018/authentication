@@ -22,4 +22,5 @@ public class AccountEntity {
     private int failedLoginAttempts;
     private String lastLoginFailedAt;
     private List<GameEntity> gamesList;
+    private byte[] profilePicture;
 }

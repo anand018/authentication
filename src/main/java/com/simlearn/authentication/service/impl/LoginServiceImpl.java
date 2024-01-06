@@ -1,6 +1,6 @@
 package com.simlearn.authentication.service.impl;
 
-import static com.simlearn.authentication.constants.ApplicatiopnConstants.*;
+import static com.simlearn.authentication.constants.ApplicationConstants.*;
 
 import com.simlearn.authentication.dto.LoginRequestDto;
 import com.simlearn.authentication.dto.LoginResponseDto;
